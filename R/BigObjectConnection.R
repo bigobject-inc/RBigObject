@@ -54,8 +54,8 @@ setMethod("show", "BigObjectConnection", function(object) {
 #' @export
 #' @rdname BigObjectConnection-class
 setMethod("dbIsValid", "BigObjectConnection", function(dbObj) {
-  #connection_valid(dbObj@ptr)
+  dbIsValid(dbObj@backend)
 })
 
-#' @export
-DBI::dbGetQuery
+##' @export
+#DBI::dbGetQuery

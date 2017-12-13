@@ -58,7 +58,6 @@ setMethod("dbConnect", "BigObjectDriver",
 #' @import methods DBI
 #' @rdname dbConnect-BigObjectDriver-method
 #' @examples
-#' if (mariadbHasDefault()) {
 #' # connect to a database and load some data
 #' con <- dbConnect(RBigObject::BigObject(), dbname = "test")
 #' dbWriteTable(con, "USArrests", datasets::USArrests, overwrite = TRUE)
@@ -75,7 +74,6 @@ setMethod("dbConnect", "BigObjectDriver",
 #' # clean up
 #' dbRemoveTable(con, "USArrests")
 #' dbDisconnect(con)
-#' }
 BigObject <- function() {
   new("BigObjectDriver")
 }

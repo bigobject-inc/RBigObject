@@ -19,7 +19,6 @@ NULL
 #' @inheritParams DBI::sqlRownamesToColumn
 #' @param ... Unused, needed for compatiblity with generic.
 #' @examples
-#' if (mariadbHasDefault()) {
 #' con <- dbConnect(RBigObject::BigObject(), dbname = "test")
 #'
 #' # By default, row names are written in a column to row_names, and
@@ -27,15 +26,25 @@ NULL
 #' dbWriteTable(con, "mtcars", mtcars[1:5, ], temporary = TRUE)
 #' dbReadTable(con, "mtcars")
 #' dbReadTable(con, "mtcars", row.names = NULL)
-#' }
 #' @name bigobject-tables
 NULL
 
 #' @export
 #' @rdname bigobject-tables
 setMethod("dbReadTable", c("BigObjectConnection", "character"),
-  function(conn, name, row.names = NA, check.names = TRUE, ...) {
+  function(conn, name, ..., row.names = FALSE, check.names = TRUE) {
+    row.names <- compatRowNames(row.names)
+
+    if ((!is.logical(row.names) && !is.character(row.names)) || length(row.names) != 1L)  {
+      stopc("`row.names` must be a logical scalar or a string")
+    }
+
+    if (!is.logical(check.names) || length(check.names) != 1L)  {
+      stopc("`check.names` must be a logical scalar")
+    }
+
     name <- dbQuoteIdentifier(conn, name)
+
     out <- dbGetQuery(conn, paste("SELECT * FROM ", name),
       row.names = row.names)
 
@@ -44,158 +53,133 @@ setMethod("dbReadTable", c("BigObjectConnection", "character"),
     }
 
     out
+
   }
 )
-#
-##' @inheritParams DBI::sqlRownamesToColumn
-##' @param overwrite a logical specifying whether to overwrite an existing table
-##'   or not. Its default is \code{FALSE}. (See the BUGS section below)
-##' @param append a logical specifying whether to append to an existing table
-##'   in the DBMS.  If appending, then the table (or temporary table)
-##'   must exist, otherwise an error is reported. Its default is \code{FALSE}.
-##' @param value A data frame.
-##' @param field.types Optional, overrides default choices of field types,
-##'   derived from the classes of the columns in the data frame.
-##' @param temporary If \code{TRUE}, creates a temporary table that expires
-##'   when the connection is closed.
-##' @param allow.keywords DEPRECATED.
-##' @export
-##' @rdname bigobject-tables
-#setMethod("dbWriteTable", c("BigObjectConnection", "character", "data.frame"),
-#  function(conn, name, value, field.types = NULL, row.names = NA,
-#           overwrite = FALSE, append = FALSE, ..., allow.keywords = FALSE,
-#           temporary = FALSE) {
-#
-#    if (!missing(allow.keywords)) {
-#      warning("allow.keywords is deprecated.")
-#    }
-#
-#    if (overwrite && append)
-#      stop("overwrite and append cannot both be TRUE", call. = FALSE)
-#
-#    dbBegin(conn)
-#    on.exit(dbRollback(conn))
-#
-#    found <- dbExistsTable(conn, name)
-#    if (found && !overwrite && !append) {
-#      stop("Table ", name, " exists in database, and both overwrite and",
-#        " append are FALSE", call. = FALSE)
-#    }
-#    if (found && overwrite) {
-#      dbRemoveTable(conn, name)
-#    }
-#    if (!found && append) {
-#      stop("Table ", name, " does not exists when appending")
-#    }
-#
-#    if (!found || overwrite) {
-#      sql <- sqlCreateTable(conn, name, value, row.names = row.names,
-#        temporary = temporary)
-#      dbGetQuery(conn, sql)
-#    }
-#
-#    if (nrow(value) > 0) {
-#      values <- sqlData(conn, value[, , drop = FALSE], row.names)
-#
-#      name <- dbQuoteIdentifier(conn, name)
-#      fields <- dbQuoteIdentifier(conn, names(values))
-#      params <- rep("?", length(fields))
-#
-#      sql <- paste0(
-#        "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
-#        "VALUES (", paste0(params, collapse = ", "), ")"
-#      )
-#      rs <- dbSendQuery(conn, sql)
-#      tryCatch(
-#        result_bind_rows(rs@ptr, values),
-#        finally = dbClearResult(rs)
-#      )
-#    }
-#
-#    on.exit(NULL)
-#    dbCommit(conn)
-#
-#    TRUE
-#  }
-#)
-#
-#setMethod("sqlData", "BigObjectConnection", function(con, value, row.names = NA, ...) {
-#  value <- sqlRownamesToColumn(value, row.names)
-#
-#  # Convert factors to strings
-#  is_factor <- vapply(value, is.factor, logical(1))
-#  value[is_factor] <- lapply(value[is_factor], as.character)
-#
-#  # Ensure all in utf-8
-#  is_char <- vapply(value, is.character, logical(1))
-#  value[is_char] <- lapply(value[is_char], enc2utf8)
-#
-#  value
-#})
-#
-##' @export
-##' @rdname bigobject-tables
-##' @importFrom utils read.table
-##' @param sep field separator character
-##' @param eol End-of-line separator
-##' @param skip number of lines to skip before reading data in the input file.
-##' @param quote the quote character used in the input file (defaults to
-##'    \code{\"}.)
-##' @param header logical, does the input file have a header line? Default is the
-##'    same heuristic used by \code{read.table}, i.e., \code{TRUE} if the first
-##'    line has one fewer column that the second line.
-##' @param nrows number of lines to rows to import using \code{read.table} from
-##'   the input file to create the proper table definition. Default is 50.
-#setMethod("dbWriteTable", c("BigObjectConnection", "character", "character"),
-#  function(conn, name, value, field.types = NULL, overwrite = FALSE,
-#           append = FALSE, header = TRUE, row.names = FALSE, nrows = 50,
-#           sep = ",", eol = "\n", skip = 0, quote = '"', temporary = FALSE,
-#           ...) {
-#
-#    if (overwrite && append)
-#      stop("overwrite and append cannot both be TRUE", call. = FALSE)
-#
-#    found <- dbExistsTable(conn, name)
-#    if (found && !overwrite && !append) {
-#      stop("Table ", name, " exists in database, and both overwrite and",
-#        " append are FALSE", call. = FALSE)
-#    }
-#    if (found && overwrite) {
-#      dbRemoveTable(conn, name)
-#    }
-#    if (!found && append) {
-#      stop("Table ", name, " does not exists when appending")
-#    }
-#
-#    if (!found || overwrite) {
-#      if (is.null(field.types)) {
-#        # Initialise table with first `nrows` lines
-#        d <- read.table(value, sep = sep, header = header, skip = skip,
-#          nrows = nrows, na.strings = "\\N", comment.char = "",
-#          stringsAsFactors = FALSE)
-#        field.types <- vapply(d, dbDataType, dbObj = conn,
-#          FUN.VALUE = character(1))
-#      }
-#
-#      sql <- sqlCreateTable(conn, name, field.types,
-#        row.names = row.names, temporary = temporary)
-#      dbGetQuery(conn, sql)
-#    }
-#
-#    path <- normalizePath(value, winslash = "/", mustWork = TRUE)
-#    sql <- paste0(
-#      "LOAD DATA LOCAL INFILE ", dbQuoteString(conn, path), "\n",
-#      "INTO TABLE ", dbQuoteIdentifier(conn, name), "\n",
-#      "FIELDS TERMINATED BY ", dbQuoteString(conn, sep), "\n",
-#      "OPTIONALLY ENCLOSED BY ", dbQuoteString(conn, quote), "\n",
-#      "LINES TERMINATED BY ", dbQuoteString(conn, eol), "\n",
-#      "IGNORE ", skip + as.integer(header), " LINES")
-#
-#    mariadbExecQuery(conn, sql)
-#
-#    TRUE
-#  }
-#)
+
+#' @inheritParams DBI::sqlRownamesToColumn
+#' @param overwrite a logical specifying whether to overwrite an existing table
+#'   or not. Its default is \code{FALSE}. (See the BUGS section below)
+#' @param append a logical specifying whether to append to an existing table
+#'   in the DBMS.  If appending, then the table (or temporary table)
+#'   must exist, otherwise an error is reported. Its default is \code{FALSE}.
+#' @param value A data frame.
+#' @param field.types Optional, overrides default choices of field types,
+#'   derived from the classes of the columns in the data frame.
+#' @param temporary If \code{TRUE}, creates a temporary table that expires
+#'   when the connection is closed.
+#' @param allow.keywords DEPRECATED.
+#' @export
+#' @rdname bigobject-tables
+setMethod("dbWriteTable", c("BigObjectConnection", "character", "data.frame"),
+  function(conn, name, value, field.types = NULL, row.names = NA,
+           overwrite = FALSE, append = FALSE, ..., allow.keywords = FALSE,
+           temporary = FALSE) {
+    
+    row.names <- compatRowNames(row.names)
+
+    if ((!is.logical(row.names) && !is.character(row.names)) || length(row.names) != 1L)  {
+      stopc("`row.names` must be a logical scalar or a string")
+    }
+    if (!is.logical(overwrite) || length(overwrite) != 1L || is.na(overwrite))  {
+      stopc("`overwrite` must be a logical scalar")
+    }
+    if (!is.logical(append) || length(append) != 1L || is.na(append))  {
+      stopc("`append` must be a logical scalar")
+    }
+    if (!is.logical(temporary) || length(temporary) != 1L)  {
+      stopc("`temporary` must be a logical scalar")
+    }
+
+    if (overwrite && append) {
+      stopc("overwrite and append cannot both be TRUE")
+    }
+    if (append && !is.null(field.types)) {
+      stopc("Cannot specify field.types with append = TRUE")
+    }
+
+    if (!missing(allow.keywords)) {
+      warning("allow.keywords is deprecated.")
+    }
+
+
+    found <- dbExistsTable(conn, name)
+    if (found && !overwrite && !append) {
+      stop("Table ", name, " exists in database, and both overwrite and",
+        " append are FALSE", call. = FALSE)
+    }
+    if (found && overwrite) {
+      dbRemoveTable(conn, name)
+    }
+
+    if (!found || overwrite) {
+      sql <- sqlCreateTable(
+        conn,
+        name,
+        if (is.null(field.types)) value else field.types,
+        row.names = row.names,
+        temporary = temporary
+      )
+      dbExecute(conn, sql)
+    }
+
+    if (nrow(value) > 0) {
+      values <- sqlData(conn, value[, , drop = FALSE], row.names)
+
+      name <- dbQuoteIdentifier(conn, name)
+      fields <- dbQuoteIdentifier(conn, names(values))
+
+      write.table.to.con(conn, values, name, fields)
+
+    }
+
+    invisible(TRUE)
+  }
+)
+
+setMethod("sqlData", "BigObjectConnection", function(con, value, row.names = NA, ...) {
+  value <- sqlRownamesToColumn(value, row.names)
+
+  # Convert factors to strings
+  is_factor <- vapply(value, is.factor, logical(1))
+  value[is_factor] <- lapply(value[is_factor], as.character)
+
+  # Ensure all in utf-8
+  is_char <- vapply(value, is.character, logical(1))
+  value[is_char] <- lapply(value[is_char], enc2utf8)
+
+  value
+})
+
+write.table.to.con <- function(con, tab, tab.name, col.name) {
+  partition <- sort(unique(c(seq.int(0, nrow(tab), by=1000), nrow(tab))))
+  # use sapply if without parrallel
+  cmds <- sapply(c(2:length(partition)), function(i) {
+  #cmds <- parSapply(cl, c(2:length(partition)), function(i) {
+    part.idx <- seq.int(partition[i-1] + 1, partition[i])
+    insert.values <- unlist(apply(as.data.frame(tab[part.idx,]), 1, function(x){
+      x.strs <- unlist(lapply(x, function(x) {
+        if(is.character(x)) {
+          outstr <- paste0("`", gsub("`", "\\\\`", gsub("\\\\", "\\\\\\\\", x)), "`")
+        } else {
+          outstr <- format(x)
+        }
+        #cat(paste0(outstr, "\n"))
+        outstr 
+      }), use.names=FALSE)
+      str <- paste0("(", paste(x.strs, sep="", collapse=","), ")")
+    }), recursive=FALSE, use.names=FALSE)
+    cmd <- paste0("INSERT INTO ", tab.name, " (", paste0(col.name, collapse = ", "), ")", " VALUES ", paste(insert.values, collapse=","))
+    #cat(paste0(cmd, "\n"))
+    dbExecute(con, cmd)
+  })
+  # For parallel 
+  #for (cmd in cmds) {
+  #  dbExecute(con, cmd)
+  #}
+  TRUE
+}
+
 
 #' @export
 #' @rdname bigobject-tables
@@ -207,9 +191,13 @@ setMethod("dbListTables", "BigObjectConnection", function(conn, ...) {
 #' @rdname bigobject-tables
 setMethod("dbExistsTable", c("BigObjectConnection", "character"),
   function(conn, name, ...) {
+    stopifnot(length(name) == 1L)
+    if (!dbIsValid(conn)) {
+      stopc("Invalid connection")
+    }
     tryCatch({
       dbGetQuery(conn, paste0(
-        "SELECT NULL FROM ", dbQuoteIdentifier(conn, name), " WHERE FALSE"
+        "SELECT NULL FROM ", dbQuoteIdentifier(conn, name), " LIMIT 0"
       ))
       TRUE
     }, error = function(...) {
@@ -223,8 +211,16 @@ setMethod("dbExistsTable", c("BigObjectConnection", "character"),
 setMethod("dbRemoveTable", c("BigObjectConnection", "character"),
   function(conn, name, ...){
     name <- dbQuoteIdentifier(conn, name)
-    dbGetQuery(conn, paste0("DROP TABLE ", name))
-    TRUE
+    # Executing DROP TABLE ... will raise an exception in Rcpp.  
+    #   Rcpp::exception in result_create(conn@ptr, statement): Object doesn't exist: iris [11]
+    # The table is deleted even though there is an exception. Therefore we catch the exception and ignore it. 
+    # The bug is not found in MariaDB. The packets in BigObject and MariaDB are the same. 
+    # It's a workaround. 
+    tryCatch({
+      dbExecute(conn, paste0("DROP TABLE ", name))
+    }, error = function(e){
+    })
+    invisible(TRUE)
   }
 )
 

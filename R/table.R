@@ -210,6 +210,10 @@ setMethod("dbExistsTable", c("BigObjectConnection", "character"),
 #' @rdname bigobject-tables
 setMethod("dbRemoveTable", c("BigObjectConnection", "character"),
   function(conn, name, ...){
+    stopifnot(length(name) == 1L)
+    if (!dbIsValid(conn)) {
+      stopc("Invalid connection")
+    }
     name <- dbQuoteIdentifier(conn, name)
     # Executing DROP TABLE ... will raise an exception in Rcpp.  
     #   Rcpp::exception in result_create(conn@ptr, statement): Object doesn't exist: iris [11]

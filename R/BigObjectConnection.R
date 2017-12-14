@@ -1,7 +1,7 @@
 #' Class BigObjectConnection.
 #'
 #' \code{BigObjectConnection.} objects are usually created by
-#' \code{\link[DBI]{dbConnect}}
+#' [DBI::dbConnect()]
 #'
 #' @import methods DBI
 #' @export

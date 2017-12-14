@@ -147,6 +147,17 @@ setMethod("dbColumnInfo", "BigObjectResult", function(res, ...) {
 
 #' @export
 #' @rdname result-meta
+setMethod("dbListFields", c("BigObjectConnection", "character"), function(conn, name) {
+  # NOTE: DESC will cause fatal error. avoid use it. 
+  #dbGetQuery(conn, paste0("DESC ", dbQuoteIdentifier(conn, table)))[[1]]
+  rs <- dbSendQuery(conn, paste0("SELECT * FROM ", name, " LIMIT 1"))
+  x <- dbColumnInfo(rs)$name
+  dbClearResult(rs)
+  x
+})
+
+#' @export
+#' @rdname result-meta
 setMethod("dbGetRowsAffected", "BigObjectResult", function(res, ...) {
   dbGetRowsAffected(res@bak_res)
 })

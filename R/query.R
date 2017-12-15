@@ -47,8 +47,22 @@ setMethod("dbFetch", c("BigObjectResult", "numeric"),
     if (is.infinite(n)) n <- -1
     if (trunc(n) != n) stopc("n must be a whole number")
 
+    stmt <- toupper(trimws(dbGetInfo(res@bak_res)$statement))
     df <- dbFetch(res@bak_res, n, row.names = row.names)
+    if (nrow(df) == 0) {
+      if (!grepl("^((REMOTE|CLUSTER)[[:space:]]+|)SELECT", stmt)) {
+        warning("shall return nothing.")
+      }
+    }
     df
+  }
+)
+
+#' @rdname query
+#' @export
+setMethod("dbFetch", c("BigObjectResult", "missing"),
+  function(res, n, ...) {
+    dbFetch(res, n=-1)
   }
 )
 
@@ -76,6 +90,13 @@ setMethod("dbSendQuery", c("BigObjectConnection", "character"),
 	if (statement == "SELECT" || length(statement) > 1) {
       stop("You have an error in your SQL syntax;")
 	}
+
+    rss <- dbListResults(conn@backend)
+    if (length(rss) > 0) {
+      dbClearResult(rss[[1]])
+      warning("found a result set and close it")
+    }
+
 	bak_res <- dbSendQuery(conn@backend, statement)
 
     rs <- new("BigObjectResult",
@@ -103,6 +124,11 @@ setMethod("dbBind", "BigObjectResult", function(res, params, ...) {
 #' @rdname query
 #' @export
 setMethod("dbClearResult", "BigObjectResult", function(res, ...) {
+  if (!dbIsValid(res@bak_res)) { 
+    warning("Expired, result set already closed") 
+    return(invisible(TRUE)) 
+  }
+
   dbClearResult(res@bak_res)
   invisible(TRUE)
 })

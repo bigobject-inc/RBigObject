@@ -8,7 +8,7 @@
 setClass("BigObjectResult",
   contains = "DBIResult",
   slots = list(
-    bak_res = "MariaDBResult",
+    bak_res = "MySQLResult",
     sql = "character"
   )
 )

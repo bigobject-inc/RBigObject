@@ -9,7 +9,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
   DBI, 
-  RMariaDB (>= 1.0), 
+  RMySQL (>= 0.10), 
   methods
 Suggests:
   DBItest, testthat

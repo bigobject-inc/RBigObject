@@ -1,7 +1,15 @@
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
     test_driver_skip <- c("get_info_driver")
-    test_connection_skip <- c("get_info_connection")
-    test_result_skip <- c("send_query_trivial", 
+    test_connection_skip <- c(#"disconnect_formals", 
+                              #"can_disconnect", 
+                              #"disconnect_closed_connection", 
+                              #"data_type_connection", 
+                              "get_info_connection", 
+                              "disconnect_invalid_connection", 
+                              "cannot_forget_disconnect", 
+                              NULL)
+    test_result_skip <- c(".*invalid_connection", 
+                          #"send_query_trivial", 
                           "send_query_only_one_result_set", 
                           "fetch_atomic",
                           "fetch_one_row",
@@ -135,10 +143,10 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
     #DBItest::test_getting_started()
     #DBItest::test_driver(skip=test_driver_skip)
     #DBItest::test_connection(skip=test_connection_skip)
-    #DBItest::test_result(skip=test_result_skip) 
-    #DBItest::test_sql(skip=test_sql_skip)
     # Testing
-    DBItest::test_meta(skip=test_meta_skip)
+    DBItest::test_result(skip=test_result_skip) 
+    #DBItest::test_sql(skip=test_sql_skip)
+    #DBItest::test_meta(skip=test_meta_skip)
     # Scheduled for testing
     #DBItest::test_transaction()
     #DBItest::test_compliance()

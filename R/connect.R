@@ -18,7 +18,7 @@ NULL
 #'   host is assumed.
 #' @param port (optional) integer of the TCP/IP default port.
 #' @param ... Unused, needed for compatibility with generic.
-#' @import methods RMariaDB
+#' @import methods RMySQL
 #' @export
 #' @examples
 #' \dontrun{
@@ -36,7 +36,7 @@ NULL
 #' @export
 setMethod("dbConnect", "BigObjectDriver",
   function(drv, ...) {
-    backend <- do.call("dbConnect", append(list(drv=RMariaDB::MariaDB()), list(...)))
+    backend <- do.call("dbConnect", append(list(drv=RMySQL::MySQL()), list(...)))
 
     #ptr <- connection_create(host, username, password, dbname, port, unix.socket,
     #  client.flag, groups, default.file, ssl.key, ssl.cert, ssl.ca, ssl.capath,
@@ -47,6 +47,8 @@ setMethod("dbConnect", "BigObjectDriver",
     con <- new("BigObjectConnection",
       backend = backend
     )
+
+    con@has_con = TRUE
 
     con
   }

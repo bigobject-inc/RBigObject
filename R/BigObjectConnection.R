@@ -9,7 +9,8 @@
 setClass("BigObjectConnection",
   contains = "DBIConnection", 
   slots = list(
-    backend = "MariaDBConnection"
+    backend = "MySQLConnection", 
+    has_con = "logical"
   )
 )
 
@@ -17,8 +18,9 @@ setClass("BigObjectConnection",
 #' @export
 #' @rdname BigObjectConnection-class
 setMethod("dbDisconnect", "BigObjectConnection", function(conn, ...) {
-  if (dbIsValid(conn@backend)) {
+  if (dbIsValid(conn)) {
     dbDisconnect(conn@backend)
+    eval.parent(substitute(conn@has_con <- FALSE))
   } else {
 	warning("The connection has been disconnected.")
   }
@@ -28,8 +30,8 @@ setMethod("dbDisconnect", "BigObjectConnection", function(conn, ...) {
 #' @export
 #' @rdname BigObjectConnection-class
 setMethod("dbGetInfo", "BigObjectConnection", function(dbObj, what="", ...) {
-  #connection_info(dbObj@ptr)
-  TRUE
+  #dbGetInfo(dbObj@backend)
+  dbIsValid(dbObj)
 })
 
 #' @export
@@ -54,7 +56,16 @@ setMethod("show", "BigObjectConnection", function(object) {
 #' @export
 #' @rdname BigObjectConnection-class
 setMethod("dbIsValid", "BigObjectConnection", function(dbObj) {
-  dbIsValid(dbObj@backend)
+  #dbIsValid(dbObj@backend)
+  if (dbObj@has_con) {
+    backend_is_corrupted <- FALSE
+    tryCatch ({dbGetQuery(dbObj@backend, "SHOW CONFIG")}, error=function(e){backend_is_corrupted <- TRUE }) 
+    if (backend_is_corrupted) {
+      dbObj@has_con <- FALSE
+      eval.parent(substitute(dbObj@has_con <- FALSE))
+    }  
+  }
+  dbObj@has_con 
 })
 
 ##' @export

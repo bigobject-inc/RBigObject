@@ -23,4 +23,5 @@ Collate:
     'quote.R'
     'rownames.R'
     'table.R'
+    'utils.R'
 RoxygenNote: 6.0.1

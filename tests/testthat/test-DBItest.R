@@ -53,13 +53,16 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
                           "data_64_bit_lossless",
 
                           NULL)
-    test_sql_skip <- c(
+    test_sql_skip <- c(".*invalid_connection", 
                        "quote_string_roundtrip", 
                        "quote_string_na", 
                        "quote_string_na_is_null", 
                        "quote_identifier", 
-                       "quote_identifier_string", 
-                       "quote_identifier_special", 
+                       #"quote_identifier_string", 
+                       #"quote_identifier_special", 
+                       "read_table_name",
+                       "write_table_overwrite",
+                       "write_table_append_incompatible",
                        "overwrite_table_missing", 
                        "roundtrip_keywords", 
                        "roundtrip_quotes", 
@@ -143,9 +146,9 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
     #DBItest::test_getting_started()
     #DBItest::test_driver(skip=test_driver_skip)
     #DBItest::test_connection(skip=test_connection_skip)
+    #DBItest::test_result(skip=test_result_skip) 
     # Testing
-    DBItest::test_result(skip=test_result_skip) 
-    #DBItest::test_sql(skip=test_sql_skip)
+    DBItest::test_sql(skip=test_sql_skip)
     #DBItest::test_meta(skip=test_meta_skip)
     # Scheduled for testing
     #DBItest::test_transaction()

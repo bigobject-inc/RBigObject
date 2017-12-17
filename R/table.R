@@ -33,20 +33,25 @@ NULL
 #' @rdname bigobject-tables
 setMethod("dbReadTable", c("BigObjectConnection", "character"),
   function(conn, name, ..., row.names = FALSE, check.names = TRUE) {
+
     row.names <- compatRowNames(row.names)
 
     if ((!is.logical(row.names) && !is.character(row.names)) || length(row.names) != 1L)  {
       stopc("`row.names` must be a logical scalar or a string")
     }
 
-    if (!is.logical(check.names) || length(check.names) != 1L)  {
+    if (!is.logical(check.names) || length(check.names) != 1L || is.na(check.names))  {
       stopc("`check.names` must be a logical scalar")
+    }
+
+    if (!dbExistsTable(conn, name)) {
+      stopc(paste0("Table ", name, " does not exist"))
     }
 
     name <- dbQuoteIdentifier(conn, name)
 
-    out <- dbGetQuery(conn, paste("SELECT * FROM ", name),
-      row.names = row.names)
+    out <- dbGetQuery(conn, paste("SELECT * FROM ", name))
+    out <- sqlColumnToRownames(out, row.names=row.names)
 
     if (check.names) {
       names(out) <- make.names(names(out), unique = TRUE)

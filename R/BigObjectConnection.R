@@ -29,7 +29,7 @@ setMethod("dbDisconnect", "BigObjectConnection", function(conn, ...) {
 
 #' @export
 #' @rdname BigObjectConnection-class
-setMethod("dbGetInfo", "BigObjectConnection", function(dbObj, what="", ...) {
+setMethod("dbGetInfo", "BigObjectConnection", function(dbObj, ...) {
   #dbGetInfo(dbObj@backend)
   dbIsValid(dbObj)
 })
@@ -55,7 +55,7 @@ setMethod("show", "BigObjectConnection", function(object) {
 
 #' @export
 #' @rdname BigObjectConnection-class
-setMethod("dbIsValid", "BigObjectConnection", function(dbObj) {
+setMethod("dbIsValid", "BigObjectConnection", function(dbObj, ...) {
   #dbIsValid(dbObj@backend)
   if (dbObj@has_con) {
     backend_is_corrupted <- FALSE

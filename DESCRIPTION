@@ -22,6 +22,8 @@ Collate:
     'query.R'
     'quote.R'
     'rownames.R'
+    'table-create.R'
     'table.R'
+    'transaction.R'
     'utils.R'
 RoxygenNote: 6.0.1

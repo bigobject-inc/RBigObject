@@ -86,57 +86,30 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
                        "roundtrip_field_types", 
 
                        NULL)
-    test_meta_skip <- c("bind_formals", 
-                        "bind_return_value", 
-                        "bind_empty", 
-                        "bind_too_many", 
-                        "bind_not_enough", 
-                        "bind_wrong_name", 
-                        "bind_multi_row_unequal_length", 
-                        "bind_named_param_unnamed_placeholders", 
-                        "bind_named_param_empty_placeholders", 
-                        "bind_named_param_na_placeholders", 
-                        "bind_unnamed_param_named_placeholders", 
-                        "bind_premature_clear", 
-                        "bind_multi_row", 
-                        "bind_multi_row_zero_length", 
-                        "bind_multi_row_statement", 
-                        "bind_repeated", 
-                        "bind_repeated_untouched", 
-                        "bind_integer", 
-                        "bind_numeric", 
-                        "bind_logical", 
-                        "bind_null", 
-                        "bind_character", 
-                        "bind_factor", 
-                        "bind_date", 
-                        "bind_timestamp", 
-                        "bind_timestamp_lt", 
-                        "bind_raw", 
-                        "bind_blob", 
+    test_meta_skip <- c("bind_.*", 
                         #"is_valid_formals", 
                         #"is_valid_connection", 
                         #"is_valid_stale_connection", 
                         #"is_valid_result_query", 
-                        "is_valid_result_statement", 
-                        "has_completed_formals", 
-                        "has_completed_query", 
-                        "has_completed_statement", 
-                        "has_completed_error", 
-                        "has_completed_query_spec", 
-                        "get_statement_formals", 
-                        "get_statement_query", 
-                        "get_statement_statement", 
-                        "get_statement_error", 
+                        #"is_valid_result_statement", 
+                        #"has_completed_formals", 
+                        #"has_completed_query", 
+                        #"has_completed_statement", 
+                        #"has_completed_error", 
+                        #"has_completed_query_spec", 
+                        #"get_statement_formals", 
+                        #"get_statement_query", 
+                        #"get_statement_statement", 
+                        #"get_statement_error", 
                         "column_info", 
-                        "get_row_count_formals", 
+                        #"get_row_count_formals", 
                         "row_count_query", 
-                        "row_count_statement", 
-                        "get_row_count_error", 
-                        "get_rows_affected_formals", 
+                        #"row_count_statement", 
+                        #"get_row_count_error", 
+                        #"get_rows_affected_formals", 
                         "rows_affected_statement", 
                         "rows_affected_query", 
-                        "get_rows_affected_error", 
+                        #"get_rows_affected_error", 
                         "get_info_result", 
 
                         NULL)
@@ -147,13 +120,14 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
     #DBItest::test_driver(skip=test_driver_skip)
     #DBItest::test_connection(skip=test_connection_skip)
     #DBItest::test_result(skip=test_result_skip) 
-    # Testing
-    DBItest::test_sql(skip=test_sql_skip)
+    #DBItest::test_sql(skip=test_sql_skip)
     #DBItest::test_meta(skip=test_meta_skip)
-    # Scheduled for testing
-    #DBItest::test_transaction()
     #DBItest::test_compliance()
-    #DBItest::test_stress()
+    # Testing
+    DBItest::test_stress(skip=c("simultaneous_connections"))
+    # Scheduled for testing
+    # No support
+    #DBItest::test_transaction()
 
 
 

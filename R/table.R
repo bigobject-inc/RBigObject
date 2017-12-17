@@ -73,13 +73,14 @@ setMethod("dbReadTable", c("BigObjectConnection", "character"),
 #'   derived from the classes of the columns in the data frame.
 #' @param temporary If \code{TRUE}, creates a temporary table that expires
 #'   when the connection is closed.
+#' @param default If \code{TRUE}, creates a default table in which rows can be deleted. 
 #' @param allow.keywords DEPRECATED.
 #' @export
 #' @rdname bigobject-tables
 setMethod("dbWriteTable", c("BigObjectConnection", "character", "data.frame"),
   function(conn, name, value, field.types = NULL, row.names = NA,
            overwrite = FALSE, append = FALSE, ..., allow.keywords = FALSE,
-           temporary = FALSE) {
+           temporary = FALSE, default = TRUE) {
     
     row.names <- compatRowNames(row.names)
 
@@ -123,7 +124,8 @@ setMethod("dbWriteTable", c("BigObjectConnection", "character", "data.frame"),
         name,
         if (is.null(field.types)) value else field.types,
         row.names = row.names,
-        temporary = temporary
+        temporary = temporary,
+        default = default
       )
       dbExecute(conn, sql)
     }

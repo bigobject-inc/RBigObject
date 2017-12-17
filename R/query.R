@@ -82,6 +82,15 @@ setMethod("dbGetQuery", c("BigObjectConnection", "character"),
   }
 )
 
+#' @rdname hidden_aliases
+#' @export
+setMethod(
+  "dbSendStatement", signature("BigObjectConnection", "character"),
+  function(conn, statement, ...) {
+    dbSendQuery(conn, statement, ...)
+  }
+)
+
 
 #' @rdname query
 #' @export
@@ -97,6 +106,9 @@ setMethod("dbSendQuery", c("BigObjectConnection", "character"),
       warning("found a result set and close it")
     }
 
+    #if (length(statement) > 0 && all(grepl('NULL', statement))) {
+    #    browser()
+    #}
 	bak_res <- dbSendQuery(conn@backend, statement)
 
     rs <- new("BigObjectResult",
@@ -136,6 +148,9 @@ setMethod("dbClearResult", "BigObjectResult", function(res, ...) {
 #' @rdname query
 #' @export
 setMethod("dbGetStatement", "BigObjectResult", function(res, ...) {
+  if (!dbIsValid(res)) {
+    stopc("Expired, result set already closed")
+  }
   res@sql
 })
 
@@ -168,12 +183,17 @@ NULL
 #' @export
 #' @rdname result-meta
 setMethod("dbColumnInfo", "BigObjectResult", function(res, ...) {
-  dbColumnInfo(res@bak_res)
+  ci <- dbColumnInfo(res@bak_res)
+  ci$name <- as.character(ci$name)
+  ci$type <- as.character(ci$Sclass)
+  ci$Sclass <- NULL
+  ci$length <- NULL
+  ci
 })
 
 #' @export
 #' @rdname result-meta
-setMethod("dbListFields", c("BigObjectConnection", "character"), function(conn, name) {
+setMethod("dbListFields", c("BigObjectConnection", "character"), function(conn, name, ...) {
   dbGetQuery(conn, paste("DESC", name))[[1]]
 })
 

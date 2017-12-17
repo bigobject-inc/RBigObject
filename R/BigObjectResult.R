@@ -15,7 +15,7 @@ setClass("BigObjectResult",
 
 #' @rdname BigObjectResult-class
 #' @export
-setMethod("dbIsValid", "BigObjectResult", function(dbObj) {
+setMethod("dbIsValid", "BigObjectResult", function(dbObj, ...) {
   dbIsValid(dbObj@bak_res) 
 })
 

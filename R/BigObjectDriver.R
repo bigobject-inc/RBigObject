@@ -17,7 +17,13 @@ setMethod("dbUnloadDriver", "BigObjectDriver", function(drv, ...) {
 
 #' @rdname BigObjectDriver-class
 #' @export
-setMethod("dbIsValid", "BigObjectDriver", function(dbObj) {
+setMethod("dbIsValid", "BigObjectDriver", function(dbObj, ...) {
+  TRUE
+})
+
+#' @export
+#' @rdname BigObjectDriver-class
+setMethod("dbGetInfo", "BigObjectDriver", function(dbObj, what="", ...) {
   TRUE
 })
 

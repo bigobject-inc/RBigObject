@@ -7,7 +7,7 @@ NULL
 #'
 #' @export
 #' @keywords internal
-setMethod("fetch", c("BigObjectResult", "numeric"), function(res, n) {
+setMethod("fetch", c("BigObjectResult", "numeric"), function(res, n, ...) {
   dbFetch(res@bak_res, n)
 })
 

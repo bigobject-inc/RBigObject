@@ -1,11 +1,15 @@
 # RBigObject
 
 ## Introduction
+BigObject (BO) is a very light and efficient database with small footprint. The object of RBigObject is to provide a consistent R DBI driver for R users. 
 
-## Pre-requisite
+## Required packages
+* RMySQL
+* DBI
+* devtools
 
 ## How to develop this package
-Execute R's CLI in the working directory (where this README is)
+Execute R's CLI in this repo's root directory (where this README is)
 
 ### Build and install 
 ```

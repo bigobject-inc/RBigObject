@@ -116,15 +116,15 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
 
     
     # Passed
-    #DBItest::test_getting_started()
-    #DBItest::test_driver(skip=test_driver_skip)
-    #DBItest::test_connection(skip=test_connection_skip)
-    #DBItest::test_result(skip=test_result_skip) 
-    #DBItest::test_sql(skip=test_sql_skip)
-    #DBItest::test_meta(skip=test_meta_skip)
-    #DBItest::test_compliance()
-    # Testing
+    DBItest::test_getting_started()
+    DBItest::test_driver(skip=test_driver_skip)
+    DBItest::test_connection(skip=test_connection_skip)
+    DBItest::test_result(skip=test_result_skip) 
+    DBItest::test_sql(skip=test_sql_skip)
+    DBItest::test_meta(skip=test_meta_skip)
+    DBItest::test_compliance()
     DBItest::test_stress(skip=c("simultaneous_connections"))
+    # Testing
     # Scheduled for testing
     # No support
     #DBItest::test_transaction()

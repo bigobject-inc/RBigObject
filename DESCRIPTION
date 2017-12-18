@@ -1,10 +1,10 @@
 Package: RBigObject
 Title: An R interface to BigObject
-Version: 0.0.0.9000
+Version: 0.1
 Authors@R: person("Cheng-Ching", "Huang", email = "cchuang@bigobject.io", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.0)
-License: What license is it under?
+License: GPLv3
 Encoding: UTF-8
 LazyData: true
 Imports:

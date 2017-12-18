@@ -8,6 +8,13 @@ BigObject (BO) is a very light and efficient database with small footprint. The 
 * DBI
 * devtools
 
+## How to install 
+
+```
+devtools::install_github("bigobject-inc/RBigObject")
+```
+
+
 ## How to develop this package
 Execute R's CLI in this repo's root directory (where this README is)
 
@@ -19,8 +26,10 @@ devtools::install()
 ```
 devtools::test()
 ```
-
-## How to build this package
+### Generate documents
+```
+devtools::document()
+```
 
 ## Suggested Packages
 

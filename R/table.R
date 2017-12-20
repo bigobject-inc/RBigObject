@@ -19,7 +19,7 @@ NULL
 #' @inheritParams DBI::sqlRownamesToColumn
 #' @param ... Unused, needed for compatiblity with generic.
 #' @examples
-#' con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+#' con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 #'
 #' # By default, row names are written in a column to row_names, and
 #' # automatically read back into the row.names()

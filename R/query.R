@@ -24,7 +24,7 @@ NULL
 #' @param ... Unused. Needed for compatibility with generic.
 #' @export
 #' @examples
-#' con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+#' con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 #' dbWriteTable(con, "arrests", datasets::USArrests, overwrite = TRUE)
 #'
 #' # Run query to get results as dataframe
@@ -161,7 +161,7 @@ setMethod("dbGetStatement", "BigObjectResult", function(res, ...) {
 #' @param res An object of class \code{\linkS4class{BigObjectResult}}
 #' @param ... Ignored. Needed for compatibility with generic
 #' @examples
-#' con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+#' con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 #' dbWriteTable(con, "t1", datasets::USArrests, overwrite = TRUE)
 #'
 #' rs <- dbSendQuery(con, "SELECT * FROM t1 WHERE UrbanPop >= 80")

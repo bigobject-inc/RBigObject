@@ -1,10 +1,13 @@
 Package: RBigObject
-Title: An R interface to BigObject
-Version: 0.1
-Authors@R: person("Cheng-Ching", "Huang", email = "cchuang@bigobject.io", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Title: A database interface and 'BigObject' Driver
+Version: 0.1.1
+Description: Implements a 'DBI'-compliant interface to 'BigObject' (<http://www.bigobject.io/>) databases.
+Authors@R: c(
+    person("Cheng-Ching", "Huang", email = "cchuang@bigobject.io", role = c("aut", "cre")),
+    person("RMySQL authors", role = "aut"),
+    person("RMariaDB authors", role = "aut"))
 Depends: R (>= 3.4.0)
-License: GPLv3
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -13,10 +16,14 @@ Imports:
   methods
 Suggests:
   DBItest, testthat
+URL: https://github.com/bigobject-inc/RBigObject,
+    http://www.bigobject.io
+BugReports: https://github.com/bigobject-inc/RBigObject/issues
 Collate: 
     'BigObjectConnection.R'
     'BigObjectDriver.R'
     'BigObjectResult.R'
+    'RBigObject.R'
     'connect.R'
     'deprecated.R'
     'query.R'

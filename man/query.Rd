@@ -66,7 +66,7 @@ fetches and clears for you.
 \code{dbFetch()} instead.
 }
 \examples{
-con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 dbWriteTable(con, "arrests", datasets::USArrests, overwrite = TRUE)
 
 # Run query to get results as dataframe

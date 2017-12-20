@@ -78,7 +78,7 @@ Note that the data.frame returned by \code{dbReadTable} only has
 primitive data, e.g., it does not coerce character data to factors.
 }
 \examples{
-con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 
 # By default, row names are written in a column to row_names, and
 # automatically read back into the row.names()

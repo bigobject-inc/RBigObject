@@ -40,10 +40,9 @@ generic functions.
 \examples{
 \dontrun{
 # Connect to a BigObject database running locally
-con <- dbConnect(RBigObject::BigObject(), dbname = "mydb")
+con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 # Connect to a remote database with username and password
-con <- dbConnect(RBigObject::BigObject(), host = "mydb.mycompany.com",
-  user = "abc", password = "def")
+con <- dbConnect(RBigObject::BigObject(), host = "mydb.mycompany.com",port = 3306)
 # But instead of supplying the username and password in code, it's usually
 
 # Always cleanup by disconnecting the database
@@ -51,7 +50,7 @@ dbDisconnect(con)
 }
 
 # connect to a database and load some data
-con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 dbWriteTable(con, "USArrests", datasets::USArrests, overwrite = TRUE)
 
 # query

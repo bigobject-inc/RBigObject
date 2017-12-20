@@ -29,7 +29,7 @@
 See documentation of generics for more details.
 }
 \examples{
-con <- dbConnect(RBigObject::BigObject(), dbname = "test")
+con <- dbConnect(RBigObject::BigObject(), dbname = "bigobject")
 dbWriteTable(con, "t1", datasets::USArrests, overwrite = TRUE)
 
 rs <- dbSendQuery(con, "SELECT * FROM t1 WHERE UrbanPop >= 80")
